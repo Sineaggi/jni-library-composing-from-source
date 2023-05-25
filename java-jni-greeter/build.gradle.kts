@@ -11,12 +11,10 @@ dependencies {
 val generatedHeaders by configurations.creating {
 	isCanBeConsumed = true
 	isCanBeResolved = false
-	// If you want this configuration to share the same dependencies, otherwise omit this line
-	//extendsFrom(configurations["implementation"], configurations["runtimeOnly"])
 }
 
 artifacts {
-	add(generatedHeaders.name, file("${buildDir}/generated/sources/headers/java/main")) {
+	add(generatedHeaders.name, layout.buildDirectory.dir("generated/sources/headers/java/main")) {
 		builtBy(tasks.classes)
 	}
 }

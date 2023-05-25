@@ -23,16 +23,24 @@ library {
 			}
 		})
 		compileTask.get().isPositionIndependentCode = true
+		compileTask.get().compilerArgs.addAll("-arch", "arm64", "-arch", "x86_64")
+		compileTask.get().includes.from(generatedHeaders)
 	}
 }
 
-val instrumentedClasspath by configurations.creating {
+tasks.withType<LinkSharedLibrary>().configureEach {
+	// todo: allow this to only run on macos?
+	//  maybe also linux? or also cross-build on windows?
+	linkerArgs.addAll("-arch", "arm64", "-arch", "x86_64")
+}
+
+val generatedHeaders by configurations.creating {
 	isCanBeConsumed = false
 	isCanBeResolved = true
 }
 
 dependencies {
-	instrumentedClasspath(project(mapOf(
+	generatedHeaders(project(mapOf(
 		"path" to ":java-jni-greeter",
 		"configuration" to "generatedHeaders")))
 }
