@@ -1,4 +1,5 @@
 plugins {
+	id("java")
 	id("dev.nokee.jni-library")
 }
 
@@ -10,3 +11,27 @@ library {
 		nativeImplementation(project(":cpp-jni-greeter"))
 	}
 }
+
+repositories {
+	mavenCentral()
+}
+
+//dependencies {
+//	implementation("")
+//}
+
+testing {
+	suites {
+		val test by getting(JvmTestSuite::class) {
+			useJUnitJupiter()
+		}
+	}
+}
+
+//tasks.jar {
+//
+//}
+//
+//tasks.classes {
+//
+//}
