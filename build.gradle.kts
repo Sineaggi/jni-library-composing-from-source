@@ -1,37 +1,25 @@
 plugins {
-	id("java")
-	id("dev.nokee.jni-library")
+    id("java")
+    id("dev.nokee.jni-library")
 }
 
 description = "The JNI library as the consumer would expect."
 
 library {
-	dependencies {
-		api(project(":java-jni-greeter"))
-		nativeImplementation(project(":cpp-jni-greeter"))
-	}
+    dependencies {
+        api(project(":java-jni-greeter"))
+        nativeImplementation(project(":cpp-jni-greeter"))
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
-
-//dependencies {
-//	implementation("")
-//}
 
 testing {
-	suites {
-		val test by getting(JvmTestSuite::class) {
-			useJUnitJupiter()
-		}
-	}
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter()
+        }
+    }
 }
-
-//tasks.jar {
-//
-//}
-//
-//tasks.classes {
-//
-//}
