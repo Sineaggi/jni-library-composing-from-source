@@ -14,25 +14,26 @@ library {
     }
 
     binaries.configureEach {
-        val compileTask = compileTask.get()
-        compileTask.includes.from(compileTask.targetPlatform.map {
-            listOf(File("${Jvm.current().javaHome.canonicalPath}/include")) + when {
-                it.operatingSystem.isMacOsX -> listOf(File("${Jvm.current().javaHome.absolutePath}/include/darwin"))
-                it.operatingSystem.isLinux -> listOf(File("${Jvm.current().javaHome.absolutePath}/include/linux"))
-                it.operatingSystem.isWindows -> listOf(File("${Jvm.current().javaHome.absolutePath}/include/win32"))
-                else -> emptyList()
-            }
-        })
-        compileTask.isPositionIndependentCode = true
-        compileTask.compilerArgs.addAll(compileTask.targetPlatform.map {
-            when {
-                it.operatingSystem.isMacOsX -> listOf("-arch", "arm64", "-arch", "x86_64")
-                it.operatingSystem.isLinux -> emptyList()
-                it.operatingSystem.isWindows -> emptyList()
-                else -> emptyList()
-            }
-        })
-        compileTask.includes.from(generatedHeaders)
+        with(compileTask.get()) {
+            includes.from(targetPlatform.map {
+                listOf(File("${Jvm.current().javaHome.canonicalPath}/include")) + when {
+                    it.operatingSystem.isMacOsX -> listOf(File("${Jvm.current().javaHome.absolutePath}/include/darwin"))
+                    it.operatingSystem.isLinux -> listOf(File("${Jvm.current().javaHome.absolutePath}/include/linux"))
+                    it.operatingSystem.isWindows -> listOf(File("${Jvm.current().javaHome.absolutePath}/include/win32"))
+                    else -> emptyList()
+                }
+            })
+            isPositionIndependentCode = true
+            compilerArgs.addAll(targetPlatform.map {
+                when {
+                    it.operatingSystem.isMacOsX -> listOf("-arch", "arm64", "-arch", "x86_64")
+                    it.operatingSystem.isLinux -> emptyList()
+                    it.operatingSystem.isWindows -> emptyList()
+                    else -> emptyList()
+                }
+            })
+            includes.from(generatedHeaders)
+        }
     }
 }
 
