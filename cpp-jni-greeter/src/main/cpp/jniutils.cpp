@@ -8,7 +8,7 @@
  */
 JNIEXPORT jlong JNICALL Java_com_example_greeter_JNIUtils_makeGlobalRef
         (JNIEnv *env, jclass, jobject object) {
-    return (jlong) env->NewGlobalRef(object);
+    return reinterpret_cast<jlong>(env->NewGlobalRef(object));
 }
 
 /*
@@ -18,7 +18,7 @@ JNIEXPORT jlong JNICALL Java_com_example_greeter_JNIUtils_makeGlobalRef
  */
 JNIEXPORT void JNICALL Java_com_example_greeter_JNIUtils_destroyGlobalRef
         (JNIEnv *env, jclass, jlong object) {
-    return env->DeleteGlobalRef((jobject) object);
+    return env->DeleteGlobalRef(reinterpret_cast<jobject>(object));
 }
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_com_example_greeter_JNIUtils_destroyGlobalRef
  */
 JNIEXPORT jobject JNICALL Java_com_example_greeter_JNIUtils_readGlobalRef
         (JNIEnv *, jclass, jlong object) {
-    return (jobject) object;
+    return reinterpret_cast<jobject>(object);
 }
 
 /*
@@ -38,5 +38,5 @@ JNIEXPORT jobject JNICALL Java_com_example_greeter_JNIUtils_readGlobalRef
  */
 JNIEXPORT jlong JNICALL Java_com_example_greeter_JNIUtils_getEnv
         (JNIEnv *env, jclass) {
-    return (jlong) env;
+    return reinterpret_cast<jlong>(env);
 }
