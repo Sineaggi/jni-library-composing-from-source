@@ -14,7 +14,5 @@ val generatedHeaders by configurations.creating {
 }
 
 artifacts {
-    add(generatedHeaders.name, layout.buildDirectory.dir("generated/sources/headers/java/main")) {
-        builtBy(tasks.classes)
-    }
+    add(generatedHeaders.name, tasks.compileJava.flatMap { it.options.headerOutputDirectory })
 }
