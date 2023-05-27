@@ -1,9 +1,6 @@
 
 package com.example.greeter;
 
-import java.awt.Component;
-import java.awt.Graphics;
-
 public class JNIUtils {
 
     static {
