@@ -9,6 +9,9 @@ pluginManagement {
 
 rootProject.name = "jniutils"
 
-include("java-jni")
 include("cpp-jni")
+include("java-jni")
 include("java-loader")
+include("jni-extract")
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

@@ -1,14 +1,21 @@
 plugins {
-    id("java")
+    java
     id("dev.nokee.jni-library")
 }
 
 description = "The JNI library as the consumer would expect."
 
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(20))
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(20)
+}
+
 library {
     dependencies {
-        api(project(":java-jni"))
-        nativeImplementation(project(":cpp-jni"))
+        api(projects.javaJni)
+        nativeImplementation(projects.cppJni)
+        jvmImplementation(projects.jniExtract)
     }
 }
 
@@ -19,7 +26,15 @@ repositories {
 testing {
     suites {
         val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
+            useJUnitJupiter("5.9.3")
         }
     }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs = listOf("--enable-preview")
+}
+
+tasks.test {
+    jvmArgs = listOf("--enable-preview")
 }

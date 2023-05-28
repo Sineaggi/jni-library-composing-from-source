@@ -1,11 +1,11 @@
 plugins {
-    id("java-library")
+    `java-library`
 }
 
 description = "The JNI classes, also known as the JVM bindings."
 
 dependencies {
-    implementation(project(":java-loader"))
+    implementation(projects.javaLoader)
 }
 
 val generatedHeaders by configurations.creating {
