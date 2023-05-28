@@ -14,10 +14,27 @@ val generateJextractSources by tasks.registering(Exec::class) {
         "cmd",
         "/c",
         file(jextractHome.get()).resolve("bin/jextract").absolutePath,
-        file(jdk20Home.get()).resolve("include/jni.h").absolutePath,
+        file("header.h"),
+        "-I", file(jdk20Home.get()).resolve("include").absolutePath,
         "-I", file(jdk20Home.get()).resolve("include/win32").absolutePath,
         "--source",
         "--target-package", "com.sineaggi.jniutils.internal.jni",
+        //"--help",
+
+        "--include-struct", "JNIEnv_",
+        "--include-struct", "JNINativeInterface_",
+        "--include-constant", "JNI_FALSE",
+        "--include-function", "JAWT_GetAWT",
+
+        "--include-struct", "jawt",
+        "--include-struct", "jawt_DrawingSurface",
+        "--include-struct", "jawt_DrawingSurfaceInfo",
+        "--include-struct", "jawt_Win32DrawingSurfaceInfo",
+        "--include-constant", "JAWT_VERSION_9",
+        "--include-constant", "JAWT_LOCK_ERROR",
+
+        //"--include-typedef", "JNIEnv",
+        "-l", "jawt",
         "--output", "$buildDir/generated/sources/jextract/java/main/",
     )
 }
