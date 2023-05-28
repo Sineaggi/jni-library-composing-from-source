@@ -19,7 +19,6 @@ val generateJextractSources by tasks.registering(Exec::class) {
         "-I", file(jdk20Home.get()).resolve("include/win32").absolutePath,
         "--source",
         "--target-package", "com.sineaggi.jniutils.internal.jni",
-        //"--help",
 
         "--include-struct", "JNIEnv_",
         "--include-struct", "JNINativeInterface_",
@@ -33,7 +32,6 @@ val generateJextractSources by tasks.registering(Exec::class) {
         "--include-constant", "JAWT_VERSION_9",
         "--include-constant", "JAWT_LOCK_ERROR",
 
-        //"--include-typedef", "JNIEnv",
         "-l", "jawt",
         "--output", "$buildDir/generated/sources/jextract/java/main/",
     )
