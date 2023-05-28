@@ -9,8 +9,10 @@ description = "The JNI shared library, also known as the native bindings."
 library {
     // The native component of the JNI library needs to be a shared library.
     linkage.set(listOf(Linkage.SHARED))
+
+    baseName.set("jniutils")
+
     dependencies {
-        implementation(project(":cpp-greeter"))
     }
 
     binaries.configureEach {
@@ -56,5 +58,5 @@ val generatedHeaders by configurations.creating {
 }
 
 dependencies {
-    generatedHeaders(project(path = ":java-jni-greeter", configuration = "generatedHeaders"))
+    generatedHeaders(project(path = ":java-jni", configuration = "generatedHeaders"))
 }

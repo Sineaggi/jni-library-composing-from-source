@@ -7,9 +7,8 @@ pluginManagement {
     }
 }
 
-rootProject.name = "jni-library-composing-from-source"
+rootProject.name = "jniutils"
 
-include("java-jni-greeter")
-include("cpp-jni-greeter")
+include("java-jni")
+include("cpp-jni")
 include("java-loader")
-include("cpp-greeter")

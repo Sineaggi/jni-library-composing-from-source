@@ -1,10 +1,10 @@
 
-package com.example.greeter;
+package com.github.sineaggi.jniutils;
 
 public class JNIUtils {
 
     static {
-        NativeLoader.loadLibrary(JNIUtils.class.getClassLoader(), "cpp-jni-greeter");
+        NativeLoader.loadLibrary(JNIUtils.class.getClassLoader(), "jniutils");
     }
 
     public static native long makeGlobalRef(Object o); // call NewGlobalRef, cast result to jlong and return

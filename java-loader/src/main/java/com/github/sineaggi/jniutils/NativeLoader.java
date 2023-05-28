@@ -1,5 +1,5 @@
 
-package com.example.greeter;
+package com.github.sineaggi.jniutils;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,6 @@
-import com.example.greeter.JNIUtils;
+package com.github.sineaggi.jniutils;
+
+import com.github.sineaggi.jniutils.JNIUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

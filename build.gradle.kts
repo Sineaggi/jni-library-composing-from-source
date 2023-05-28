@@ -7,8 +7,8 @@ description = "The JNI library as the consumer would expect."
 
 library {
     dependencies {
-        api(project(":java-jni-greeter"))
-        nativeImplementation(project(":cpp-jni-greeter"))
+        api(project(":java-jni"))
+        nativeImplementation(project(":cpp-jni"))
     }
 }
 
