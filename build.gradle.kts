@@ -8,7 +8,7 @@ description = "The JNI library as the consumer would expect."
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(20))
 
 tasks.withType<JavaCompile>().configureEach {
-    options.release.set(20)
+    options.release = 20
 }
 
 library {

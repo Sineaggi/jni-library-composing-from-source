@@ -15,8 +15,7 @@ jobs:
   clippy:
     name: Gradle build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    env:
-      CARGO_BUILD_TARGET: ${{ matrix.target }}
+    env: {}
     strategy:
       fail-fast: false
       matrix:

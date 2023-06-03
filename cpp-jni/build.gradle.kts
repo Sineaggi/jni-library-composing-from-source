@@ -8,9 +8,9 @@ description = "The JNI shared library, also known as the native bindings."
 
 library {
     // The native component of the JNI library needs to be a shared library.
-    linkage.set(listOf(Linkage.SHARED))
+    linkage = listOf(Linkage.SHARED)
 
-    baseName.set("jniutils")
+    baseName = "jniutils"
 
     dependencies {
     }
