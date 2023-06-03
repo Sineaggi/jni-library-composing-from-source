@@ -1,0 +1,209 @@
+# This is the main CI workflow to test that the package can be build on various platforms
+
+name: CI
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches-ignore: []
+
+env:
+  CARGO_INCREMENTAL: false
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: full
+
+jobs:
+
+  # A build that does some "meta" checks on the code integrity where the Rust compiler can't.
+  integrity-build:
+    name: Code integrity checks
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Set up Python
+        uses: actions/setup-python@v4
+      - run: python checks.py
+
+  clippy:
+    name: Clippy ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    env:
+      CARGO_BUILD_TARGET: ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - name: Linux x86_64
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            # Macos
+          - name: Macos x86_64
+            os: macos-latest
+            target: x86_64-apple-darwin
+          - name: Macos aarch64
+            os: macos-latest
+            target: aarch64-apple-darwin
+            # Windows
+          - name: Windows gnu x86_64
+            os: windows-latest
+            target: x86_64-pc-windows-gnu
+          - name: Windows msvc x86_64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - name: Windows gnu i686
+            os: windows-latest
+            target: i686-pc-windows-gnu
+          - name: Windows msvc i686
+            os: windows-latest
+            target: i686-pc-windows-msvc
+          # Android
+          - name: Android aarch64
+            os: ubuntu-latest
+            target: aarch64-linux-android
+            setup_env: |
+              set -x
+              ANDROID_NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653
+              CC=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang
+
+              echo "CC=$CC" >> $GITHUB_ENV
+              echo "CXX=$CC++" >> $GITHUB_ENV
+              echo "CLANG_PATH=$CC" >> $GITHUB_ENV
+              echo "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$CC" >> $GITHUB_ENV
+
+              echo "LIBCLANG_PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/lib64/libclang.so.13" >> $GITHUB_ENV
+              echo "LLVM_CONFIG_PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-config" >> $GITHUB_ENV
+              echo "BINDGEN_EXTRA_CLANG_ARGS='-isysroot $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot'" >> $GITHUB_ENV
+          - name: Android armv7
+            os: ubuntu-latest
+            target: armv7-linux-androideabi
+            setup_env: |
+              set -x
+              ANDROID_NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653
+              CC=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang
+
+              echo "CC=$CC" >> $GITHUB_ENV
+              echo "CXX=$CC++" >> $GITHUB_ENV
+              echo "CLANG_PATH=$CC" >> $GITHUB_ENV
+              echo "CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER=$CC" >> $GITHUB_ENV
+
+              echo "LIBCLANG_PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/lib64/libclang.so.13" >> $GITHUB_ENV
+              echo "LLVM_CONFIG_PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-config" >> $GITHUB_ENV
+              echo "BINDGEN_EXTRA_CLANG_ARGS='-isysroot $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot'" >> $GITHUB_ENV
+          # iOS
+          - name: iOS stable
+            os: macos-latest
+            target: aarch64-apple-ios
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: ${{ matrix.target }}
+          components: clippy
+      - name: Setup Environment
+        run: ${{ matrix.setup_env }}
+      - name: Run clippy
+        run: cargo clippy
+        shell: bash
+
+  examples:
+    name: Examples ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    env:
+      CARGO_BUILD_TARGET: ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            run_examples: true
+            shell: bash
+            setup_env: |
+              set -x;
+              sudo apt update -y
+              sudo apt install -y \
+                cmake ninja-build clang \
+                xorg-dev libwayland-dev libxkbcommon-dev wayland-protocols \
+                libegl1-mesa-dev mesa-vulkan-drivers
+          - name: Macos
+            os: macos-latest
+            target: x86_64-apple-darwin
+            run_examples: false # macos vm doesn't have software metal api
+            shell: bash
+            setup_env: brew install cmake ninja
+          - name: Windows gnu
+            os: windows-latest
+            target: x86_64-pc-windows-gnu
+            run_examples: true
+            shell: msys2 {0}
+          - name: Windows msvc
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            run_examples: true
+            shell: cmd
+            setup_env: choco install -y make
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - if: contains(matrix.target, 'windows-msvc')
+        name: Setup msvc
+        uses: ilammy/msvc-dev-cmd@v1
+      - if: contains(matrix.target, 'windows-gnu')
+        name: Setup msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            make
+            git
+          pacboy: >-
+            toolchain:p
+            cmake:p
+            ninja:p
+            rust:p
+      - if: "!contains(matrix.target, 'windows-gnu')"
+        name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: ${{ matrix.target }}
+      - name: Setup Environment
+        run: ${{ matrix.setup_env }}
+      - name: Run tests
+        run: cargo test
+      - name: Build examples debug
+        run: |
+          make example-capture
+          make example-compute
+          make example-triangle
+      - if: ${{ matrix.run_examples }}
+        name: Run examples debug
+        run: |
+          make run-example-capture
+          make run-example-compute
+      - name: Build examples release
+        run: |
+          make example-capture-release
+          make example-compute-release
+          make example-triangle-release
+      - if: ${{ matrix.run_examples }}
+        name: Run examples release
+        run: |
+          make run-example-capture-release
+          make run-example-compute-release
