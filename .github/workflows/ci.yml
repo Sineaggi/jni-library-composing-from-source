@@ -38,15 +38,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Environment
+        run: ${{ matrix.setup_env }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'oracle'
           java-version: '20'
           check-latest: true
-      - name: Setup Gradle
+      - name: Setup and execute Gradle 'build' task
         uses: gradle/gradle-build-action@v2
-      - name: Setup Environment
-        run: ${{ matrix.setup_env }}
-      - name: Run gradle build
-        run: gradle build
-        shell: bash
+        with:
+          gradle-version: '8.2-milestone-1'
+          arguments: 'build'
