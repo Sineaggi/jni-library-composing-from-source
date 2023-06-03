@@ -5,10 +5,13 @@ import org.junit.jupiter.api.Test;
 import javax.swing.*;
 import java.awt.*;
 
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+
 public class AWTUtilTest {
 
     @Test
     public void basicTest() {
+        assumeFalse(GraphicsEnvironment.isHeadless());
         Component component;
         if (true) {
             Frame f = new Frame();
