@@ -17,13 +17,15 @@ public class JNIUtils {
 Example usage
 ```java
 class Example {
-    int version() {
+    public int majorVersion() {
         var env = JNIUtils.getEnv();
 
         var jniEnv = JNIEnv_.ofAddress(MemorySegment.ofAddress(env), SegmentScope.global());
         var jniNativeInterface = JNIEnv_.functions$get(jniEnv);
         var getVersion = JNINativeInterface_.GetVersion(jniNativeInterface, SegmentScope.global());
         var version = getVersion.apply(jniEnv);
+
+        return version >> 16;
     }
 }
 ```

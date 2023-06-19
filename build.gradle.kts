@@ -5,7 +5,7 @@ plugins {
 
 description = "The JNI library as the consumer would expect."
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(20))
+java.toolchain.languageVersion = JavaLanguageVersion.of(20)
 
 tasks.withType<JavaCompile>().configureEach {
     options.release = 20
@@ -15,7 +15,6 @@ library {
     dependencies {
         api(projects.javaJni)
         nativeImplementation(projects.cppJni)
-        jvmImplementation(projects.jniExtract)
     }
 }
 
@@ -27,6 +26,9 @@ testing {
     suites {
         val test by getting(JvmTestSuite::class) {
             useJUnitJupiter("5.9.3")
+            dependencies {
+                implementation(projects.jniExtract)
+            }
         }
     }
 }
