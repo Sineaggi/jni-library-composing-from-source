@@ -24,7 +24,7 @@ repositories {
 
 testing {
     suites {
-        val test by getting(JvmTestSuite::class) {
+        named<JvmTestSuite>("test") {
             useJUnitJupiter("5.9.3")
             dependencies {
                 implementation(projects.jniExtract)
